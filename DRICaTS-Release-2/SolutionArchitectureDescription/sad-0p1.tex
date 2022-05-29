@@ -1,5 +1,6 @@
 \documentclass[a4paper]{book}
 \usepackage[T1]{fontenc}
+
 \usepackage[utf8]{inputenc}
 \usepackage[margin=2cm]{geometry}
 \geometry{verbose}
@@ -20,6 +21,7 @@
  breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]
  {hyperref}
 \hypersetup{colorlinks,linkcolor={red!50!black},citecolor={blue!50!black},urlcolor={blue!80!black}}
+
 \usepackage{fixltx2e}
 \usetikzlibrary{mindmap}
 \pgfdeclarelayer{background}
@@ -127,7 +129,7 @@
 			% Title
 		\HRule \\[0.4cm]
 		{ \huge \bfseries DRICATS-Health Solution Architecture\\[0.4cm] }
-		Distributed/Resilience Integration, Collaboration and Tasking Services \\
+		Distributed/Resilient Integration, Collaboration and Tasking Services \\
 		for Health Information Systems
 
 		\HRule \\[1.5cm]
@@ -508,6 +510,46 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 
 \appendix
 
+\chapter{Petasos}
+\section{Overview}
+\section{Functional Architecture}
+    \petasos is the core capability delivery framework of the \dricats system and is responsible, within each application, for ensuring effective \textit{function delivery} (i.e. the throughput, reliability and scalability) and \textit{function assurance} (i.e. recovery, reporting and metrics) of system behaviour.
+
+    \petasos is comprised of several building blocks - some which operate within each individual application \textit{POD}, others which span all \textit{PODs} delivering a specific application (\textit{service}) whilst others require peer functionality within \textit{enabler} subsystems (such as \textbf{ITOps}, \textbf{Ladon} and \textbf{Ponos}).  
+\subsection{Overview}
+    \begin{figure}[h!]
+        \begin{adjustbox}{max size={0.98\textwidth}{0.9\textheight}, center}
+            \begin{tikzpicture}
+            \path[mindmap,concept color=gray!10,text=black]
+                node[concept] {\Huge{Petasos}}[clockwise from=0, level 1 concept/.append style={sibling angle=90}]
+                child[concept color=red!10, text=black] { node[concept] {OA\&M}[clockwise from=90, , level 2 concept/.append style={sibling angle=90}]
+                    child { node[concept] {Notifications} }
+                    child { node[concept] {Metrics} }
+                    child { node[concept] {Reporting} }}
+                child[concept color=blue!10] { node[concept] {Tasking} [clockwise from=22.5, level 2 concept/.append style={sibling angle=45}]
+                    child { node[concept] {Registration} }
+                    child { node[concept] {Replication} }
+                    child { node[concept] {Recovery} }
+                    child { node[concept] {Reporting} }
+                    child { node[concept] {Distribution} }
+                    child { node[concept] {Interception} }}
+                child[concept color=green!10] { node[concept] {Pathway\\Execution} [clockwise from=-90, level 2 concept/.append style={sibling angle=90}]
+                    child { node[concept] {Replication} }
+                    child { node[concept] {Monitoring} }
+                    child { node[concept] {Tracking\\Journey} }}
+                child[concept color=yellow!10] { node[concept] {Scaling} [clockwise from=-180, level 2 concept/.append style={sibling angle=180}]
+                    child { node[concept] {Concurrency} }
+                    child { node[concept] {Sharding} }};
+            \end{tikzpicture}
+        \end{adjustbox}
+        \caption{Petasos - Functional Architecture}
+        \label{fig:functional-architecture-petasos-overview}
+    \end{figure}
+
+\section{Conceptual Architecture}
+\section{Logical Architecture}
+\section{Deployment Architecture}
+
 \chapter{Ponos}
 \section{Overview}
 \subsection{Functional Overview}
@@ -648,6 +690,48 @@ It is also worthwhile noting that \ponos implments data resilience via replicati
 
 \chapter{MITaF-HL7v2}
 \section{Overview}
+\section{Conceptual Architecture}
+\section{Logical Architectire}
+\section{Deployment Architecture}
+
+\chapter{FHIRBreak-Files}
+\section{Overview}
+\section{Business Services}
+\begin{figure}[h!]
+\begin{adjustbox}{max size={0.95\textwidth}{0.9\textheight}, center}
+\begin{tikzpicture}
+\path[mindmap,concept color=gray!10,text=black]
+    node[concept] {\LARGE{FHIRBreak\\Files}}[clockwise from=90, level 1 concept/.append style={sibling angle=90}]
+    child[concept color=gray!10, text=black] { node[concept] {\large{Petasos}}[clockwise from=180]
+        child { node[concept] {Metrics} }
+        child { node[concept] {AuditTrail} }
+        child { node[concept] {Messaging} }
+        child[concept] { 
+            node[concept] {Tasks} [clockwise from=45, level 3 concept/.append style={sibling angle=45}]
+                child { node[concept, minimum size=1.5cm] {Assure} }
+                child { node[concept, minimum size=1.5cm] {Report} }
+                child { node[concept, minimum size=1.5cm] {Intercept} }
+                child { node[concept, minimum size=1.5cm] {Deliver} 
+            }
+        }
+    }
+    child[concept color=blue!10] { 
+        node[concept] {Interact} [clockwise from=0]
+            child { node[concept] {FileWriter} }
+            child { node[concept] {FileReader} }
+            child { node[concept] {FileMover} }
+    }
+    child[concept color=blue!10] { node[concept] {Transform} [clockwise from=0,level 2 concept/.append style={sibling angle=180}]
+        child { node[concept] {Media\\Conversion} }
+        child { node[concept] {Attachment\\Conversion} }}
+    child[concept color=blue!10] { node[concept] {Checkpoint} [clockwise from=-90, level 2 concept/.append style={sibling angle=90}]
+        child { node[concept] {Inbound Policy \\ Enforcement} }
+        child { node[concept] {Outbound Policy \\ Enforcement} }};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{FHIRBreak-Files Function Map}
+\label{fig:ponos-subsystem-overview}
+\end{figure}
 \section{Conceptual Architecture}
 \section{Logical Architectire}
 \section{Deployment Architecture}
