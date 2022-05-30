@@ -511,11 +511,16 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 \appendix
 
 \chapter{Petasos}
+\label{epic:petasos}
 \section{Overview}
-\section{Functional Architecture}
     \petasos is the core capability delivery framework of the \dricats system and is responsible, within each application, for ensuring effective \textit{function delivery} (i.e. the throughput, reliability and scalability) and \textit{function assurance} (i.e. recovery, reporting and metrics) of system behaviour.
 
-    \petasos is comprised of several building blocks - some which operate within each individual application \textit{POD}, others which span all \textit{PODs} delivering a specific application (\textit{service}) whilst others require peer functionality within \textit{enabler} subsystems (such as \textbf{ITOps}, \textbf{Ladon} and \textbf{Ponos}).  
+    \petasos is comprised of several building blocks - some which operate within each individual application \textit{POD}, others which span all \textit{PODs} delivering a specific application (\textit{service}) whilst others require peer functionality within \textit{enabler} subsystems (such as \textbf{ITOps}, \textbf{Ladon} and \textbf{Ponos}).
+
+    This \textit{Appendix} details the functional, conceptual, logical and deployment architecture of the \petasos framework - as used within the various subsystems comprising a \dricats deployment.
+
+    With the exception of the \textbf{Petasos-Interzone-Repeater}, a \textbf{JGroups} based reliable messaging and \textit{Remote Method Invocation} framework, \petasos does not have a stand-alone component. It is implemented and delivered as enablers within the various other subsytems. It, in turn, is enabled by the \textbf{Ladon}, \textbf{Hestia.Audit}, \textbf{ITOps} and \textbf{Ponos} subsystems.
+\section{Functional Architecture}
 \subsection{Overview}
     \begin{figure}[h!]
         \begin{adjustbox}{max size={0.98\textwidth}{0.9\textheight}, center}
@@ -545,6 +550,80 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
         \caption{Petasos - Functional Architecture}
         \label{fig:functional-architecture-petasos-overview}
     \end{figure}
+
+    The functional architecture, as illustrated in the figure below (see Figure \ref{fig:functional-architecture-petasos-overview}), encapsulates the following enabling functions and services:
+    \begin{itemize}
+        \item \textit{Operations, Administration \& Maintenance (OA\&M)}: Whilst the whole of \petasos may be considered an OA\&M function, it is useful to distinguish the actual OA\&M functions separately. OA\&M functions are, as their name suggest, the functions of the system that are used to monitor and report the effective (or otherwise) operation of the system (subsystem). \petasos includes the following general OA\&M functions:
+        \begin{itemize}
+            \item \textit{Notifications:} Asynchronous events/updates, distributed via various communication channels (and user interfaces) that communicate any ``abnormal'' or ``note-worthy'' event within the system.
+            \item \textit{Metrics:} Worthwhile statics and parameters that detail the present-state (and historical) view of the subsystem.
+            \item \textit{Reporting:} System (subsytem) Events/ and checkpoints of ``note'', reported using a well-defined framework pertaining to the activity in question. \petasos uses two forms of reporting, a FHIR::AuditEvent based reporting log and a FHIR::Task centric activity database. The content in both is visible via various user interfaces.
+        \end{itemize}
+        \item \textit{Pathway Execution:} At its heart, the \petasos framework implements key functions to ensure the effective \textbf{processing} and \textbf{completion} of \textbf{Tasks}. Within the context of a \textit{Message Integration Engine}, this \textit{``task completion''} is manifested as an assurance that messages \textbf{received by it} are captured, processed and, if appropriate, \textbf{forwarded by it} - if appropriate. The \textit{Pathway Execution} functions include:
+        \begin{itemize}
+            \item \textit{Replication:} Irrespective of the activity being undertaken (i.e. message processing, task processing, etc.) - all activities are encapsulated within an \textit{ActionableTask} as something that ``needs to be fulfilled''. These \textit{ActionableTask's} are replicated within an application specific cache to all other ``instances'' implementing the same application function. This replication forms a part of a \textbf{localised} (to the application instance type) resilience and recovery framework - whereby all instances of the application are capable of executing (``fulfilling'') the \textit{ActionalTask} if the origin executor fails or times-out.
+            \item \textit{Monitoring:} At a local level (i.e. within the context of the application (subsystem instance), ``watchdog'' functionality monitors and takes corrective action for any \textit{ActionableTasks} that have failed to be completed. This \textit{Monitoring} functionality also tightly couples with the \textit{OA\&M} functions to provide notifications and alerts as to asymptomatic behaviours.
+            \item \textit{Task Hand-Off/Journey:} Within the local environment (of a single ``application'' or ``POD''), ensuring that the completion of one \textit{ActionableTask} is processed, audited and a successor kickstarted (with suitable monitoring of successful launch) is also managed.
+        \end{itemize}
+        \item \textit{Scaling:}
+        \begin{itemize}
+            \item \textit{Concurrency:} Executing multiple instances doing the ``same'' thing allows for increased throughput and rapid recovery in failure conditions.
+            \item \textit{Sharding:} Splitting up the processing, based on content, function, origin or target means that the framework can scale in multiple ways - all via configuration rather than code changes.
+        \end{itemize}
+        \item \textit{Tasking:}
+        \begin{itemize}
+            \item \textit{Registration:} The \textit{registration} of \textit{tasks} (and other activities) to a \textit{logically centralised, physically replicated/distributed} framework (i.e. the \ponos subsystem) provides a very high level of resilience - beyond single application/service boundaries. The capability goes beyond the \textit{Replication} function to provide a \textit{logically centralised} recovery, suspend/resume and monitoring point.
+            \item \textit{Replication:} Each \textit{application} delivering a particular \textit{service} within the \dricats framework (and built on the \petasos framework) makes use of a ``shared cache'' with other instances of the same \textit{application} type. This cache ensures that the content of an \textit{ActionableTask} being implemented is replicated across ALL instances in real-time. Failure of a single \textit{POD} in which an \textit{application} instance is executing results in no loss of information - beyond in-flight computations. The \textit{PathwayExecution::Replication} function identified above ensures that there are multiple instances of the \textit{application} available to ``pick-up'' the processing under failure conditions.
+            \item \textit{Recovery:} The \textit{Recovery} framework for \textit{tasks} comprises three (3) tiers of capability:
+            \begin{itemize}
+                \item \textit{Local Cache Availability:} Firstly, the actual \textit{FulfillmentTask\footnote{The \textit{FulfillmentTask} is the encapsulation of task state for the actual implementation/fulfillment of the activity pertaining to the \textit{ActionableTask}.}} being undertaken within application has a snapshot stored in a local cache for recovery/retry purposes (\textit{PathwayExecution::Tracking/Journey, PathwayExecution::Monitoring}).
+                \item \textit{Shared Cache Availability:} The base \textit{ActionableTask} is persisteted across of application instant types for the purposes of recovery and re-try via another application instant - if this instant fails processing the task more than a configurable number or times or fails/terminates for some reason.
+                \item \textit{Task Repository:} The base \textit{ActionableTask} is registered  with a centralised repository (see \ref{feature:petasos.tasking.registration}) for the purposes of ``global'' monitoring, suspend/resume and recovery activities.
+            \end{itemize}
+            \item \textit{Reporting:}
+            \item \textit{Distribution:}
+            \item \textit{Interception:}
+        \end{itemize}
+    \end{itemize}
+
+\subsection{Operations, Administration \& Maintenance (OA\&M)}
+\label{feature:petasos.oam}
+\subsubsection{Notifications}
+\label{feature:petasos.oam.notification}
+
+\subsubsection{Metrics}
+\label{feature:petasos.oam.metrics}
+
+\subsubsection{Reporting}
+\label{feature:petasos.oam.reporting}
+
+\subsection{Scaling}
+\label{feature:petasos.scaling}
+\subsubsection{Concurrency}
+\label{feature:petasos.scaling.concurrency}
+
+\subsubsection{Sharding}
+\label{feature:petasos.scaling.sharding}
+
+\subsection{Pathway Execution}
+\label{feature:petasos.pathway}
+
+\subsubsection{Replication}
+\label{feature:petasos.pathway.replication}
+\subsubsection{Monitoring}
+\label{feature:petasos.pathway.monitoring}
+\subsubsection{Task Hand-Off / Journey}
+\label{feature:petasos.pathway.handoff}
+
+\subsection{Tasking}
+\label{feature:petasos.tasking}
+\subsubsection{Registration}
+\label{feature:petasos.tasking.registration}
+\subsubsection{Replication}
+\subsubsection{Recovery}
+\subsubsection{Reporting}
+\subsubsection{Distribution}
+\subsubsection{Interception}
 
 \section{Conceptual Architecture}
 \section{Logical Architecture}
