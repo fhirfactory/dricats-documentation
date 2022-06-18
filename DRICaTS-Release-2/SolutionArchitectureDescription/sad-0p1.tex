@@ -16,6 +16,7 @@
 \usepackage{amssymb}
 \usepackage{adjustbox}
 \usepackage{enumitem}
+
 \usepackage[unicode=true,
  bookmarks=false,
  breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]
@@ -65,6 +66,8 @@
 \usepackage{tabu}
 \usepackage{multirow}
 
+\usepackage{pgf-umlcd}
+
 \usepackage[xindy, toc]{glossaries}
 
 \parskip=6pt
@@ -83,6 +86,7 @@
 
 \usepackage{chngcntr}
 \counterwithin*{chapter}{part}
+\counterwithin{section}{chapter}
 \makeatother
 
 \makeglossary
@@ -124,7 +128,7 @@
 \begin{titlepage}
 	\begin{center}
 
-		%\includegraphics[width=5cm]{images/ACTETDMain.png}~\\[1cm]
+		%\includegraphics[width=3.5cm]{images/ACTETDMain.png}~\\[1cm]
 
 			% Title
 		\HRule \\[0.4cm]
@@ -167,6 +171,12 @@ The following \textit{Open Source} software packages within the DRICATS solution
 
 \part{Information Systems Architecture}
 \chapter{Information Architecture}
+
+\section{Business Information Model}
+
+\section{Information Model (Class)}
+
+\subsection{DRICaTS Core (net.fhirfactory.dricats.model)}
 
 \chapter{Application Architecture}
 \section{Overview}
@@ -510,6 +520,7 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 
 \appendix
 
+\part{Appendix - \\ Subsystem Functional, Conceptual, Logical and Implementation Architectures}
 \chapter{Petasos}
 \label{epic:petasos}
 \section{Overview}
@@ -559,10 +570,10 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
             \item \textit{Metrics:} Worthwhile statics and parameters that detail the present-state (and historical) view of the subsystem.
             \item \textit{Reporting:} System (subsytem) Events/ and checkpoints of ``note'', reported using a well-defined framework pertaining to the activity in question. \petasos uses two forms of reporting, a FHIR::AuditEvent based reporting log and a FHIR::Task centric activity database. The content in both is visible via various user interfaces.
         \end{itemize}
-        \item \textit{Pathway Execution:} At its heart, the \petasos framework implements key functions to ensure the effective \textbf{processing} and \textbf{completion} of \textbf{Tasks}. Within the context of a \textit{Message Integration Engine}, this \textit{``task completion''} is manifested as an assurance that messages \textbf{received by it} are captured, processed and, if appropriate, \textbf{forwarded by it} - if appropriate. The \textit{Pathway Execution} functions include:
+        \item \textit{Pathway Execution:} At its heart, the \petasos framework implements key functions to ensure the effective \textbf{processing} and \textbf{completion} of \textbf{Tasks}. Within the context of a \textit{Message Integration Engine}, this \textit{``task completion''} is manifested as an assurance that messages \textbf{received by it} are captured, processed and, if appropriate, \textbf{forwarded by it}. The \textit{Pathway Execution} functions include:
         \begin{itemize}
-            \item \textit{Replication:} Irrespective of the activity being undertaken (i.e. message processing, task processing, etc.) - all activities are encapsulated within an \textit{ActionableTask} as something that ``needs to be fulfilled''. These \textit{ActionableTask's} are replicated within an application specific cache to all other ``instances'' implementing the same application function. This replication forms a part of a \textbf{localised} (to the application instance type) resilience and recovery framework - whereby all instances of the application are capable of executing (``fulfilling'') the \textit{ActionalTask} if the origin executor fails or times-out.
-            \item \textit{Monitoring:} At a local level (i.e. within the context of the application (subsystem instance), ``watchdog'' functionality monitors and takes corrective action for any \textit{ActionableTasks} that have failed to be completed. This \textit{Monitoring} functionality also tightly couples with the \textit{OA\&M} functions to provide notifications and alerts as to asymptomatic behaviours.
+            \item \textit{Replication:} Irrespective of the activity being undertaken (i.e. message processing, task processing, etc.) - all activities are encapsulated within an \textit{ActionableTask} as something that ``needs to be fulfilled''. These \textit{ActionableTask's} are replicated within an application specific cache to all other ``instances'' implementing the same application function. This replication forms a part of a \textbf{localised} (to the application instance type) resilience and recovery framework - whereby all instances of the application are capable of executing (``fulfilling'') the \textit{ActionalTask} if the original executor fails or times-out.
+            \item \textit{Monitoring:} At a local level (i.e. within the context of the application  - subsystem instance), ``watchdog'' functionality monitors and takes corrective action for any \textit{ActionableTasks} that have failed to be completed. This \textit{Monitoring} functionality also tightly couples with the \textit{OA\&M} functions to provide notifications and alerts as to asymptomatic behaviours.
             \item \textit{Task Hand-Off/Journey:} Within the local environment (of a single ``application'' or ``POD''), ensuring that the completion of one \textit{ActionableTask} is processed, audited and a successor kickstarted (with suitable monitoring of successful launch) is also managed.
         \end{itemize}
         \item \textit{Scaling:}
@@ -588,27 +599,27 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 
 \subsection{Operations, Administration \& Maintenance (OA\&M)}
 \label{feature:petasos.oam}
-\subsubsection{Notifications}
+\subsection{Notifications}
 \label{feature:petasos.oam.notification}
 
-\subsubsection{Metrics}
+\subsection{Metrics}
 \label{feature:petasos.oam.metrics}
 
-\subsubsection{Reporting}
+\subsection{Reporting}
 \label{feature:petasos.oam.reporting}
 
 \subsection{Scaling}
 \label{feature:petasos.scaling}
-\subsubsection{Concurrency}
+\subsection{Concurrency}
 \label{feature:petasos.scaling.concurrency}
 
-\subsubsection{Sharding}
+\subsection{Sharding}
 \label{feature:petasos.scaling.sharding}
 
-\subsection{Pathway Execution}
+\section{Pathway Execution}
 \label{feature:petasos.pathway}
 
-\subsubsection{Replication}
+\subsection{Replication}
 \label{feature:petasos.pathway.replication}
 \subsubsection{Monitoring}
 \label{feature:petasos.pathway.monitoring}
@@ -627,9 +638,120 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 
 \section{Conceptual Architecture}
 \section{Logical Architecture}
+\subsection{Overview}
+    \begin{figure}
+        \begin{adjustbox}{max size={0.98\textwidth}{0.9\textheight}, center}
+            \begin{tikzpicture}[node distance=0.2cm]
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm                          ](ipc)          {\large{Tasking}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of ipc            ](metrics)      {\large{Metrics}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of metrics        ](interception) {\large{Interception}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of interception   ](messaging)    {\large{Messaging}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of messaging      ](topology)     {\large{Topology}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of topology       ](subscriptions){\large{Subscriptions}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of subscriptions  ](audit)        {\large{Audit}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of audit          ](infinispan)   {\large{Shared Cache}};
+                \node[rectangle, minimum width=6cm, minimum height=0.6cm, below=of infinispan           ](jgroups-label){\Large{JGroups IPC}};
+                \node[rectangle, draw, dashed, fit=(ipc)(jgroups-label)                                 ](jgroups)      {};
+
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, left=of ipc, xshift=-0.6cm](audit-agent)  {\large{Audit.Agent}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of audit-agent    ](audit-cache)  {\large{Audit.Cache}};
+                \node[rectangle, minimum width=6cm, minimum height=0.6cm, below=of audit-cache          ](audit-label)  {\Large{Audit (Local)}};
+                \node[rectangle, draw, dashed, fit=(audit-agent)(audit-label)                           ](audit-local)      {};
+
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, left=of messaging, xshift=-0.6cm] (metrics-agent-pp)  {\large{Metrics.Agent-Plant}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of metrics-agent-pp] (metrics-agent-wup1) {\large{Metrics.Agent-WUP.1}};
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, left=of audit, xshift=-0.6cm] (metrics-agent-wup2) {\large{Metrics.Agent-WUP.N}};
+                \draw[-, dotted](metrics-agent-wup1) -- (metrics-agent-wup2);
+                \node[rectangle, draw, color=black, fill=red!25, minimum width=6cm, minimum height=1.0cm, below=of metrics-agent-wup2] (metrics-cache)  {Metrics.Cache};
+                \node[rectangle, minimum width=6cm, minimum height=0.6cm, below=of metrics-cache] (metrics-label)  {\Large{Metrics (Local)}};
+                \node[rectangle, draw, dashed, fit=(metrics-agent-pp)(metrics-label)] (metrics-local) {};
+
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, above=of ipc.north east, anchor=south east, yshift=1.2cm] (wup-egress-gk1)  {\color{black}EgressGatekeeper-1};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-gk1, xshift=-0.3cm] (wup-egress-pr1)  {\color{black}EgressProcessor-1};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-pr1, xshift=-0.3cm] (wup-egress-ct1)  {\color{black}EgressConduit-1};
+                \node[rectangle, draw, color=Purple, fill=Purple!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-ct1, xshift=-0.3cm] (wup-actual1)  {\color{black}WUP-1};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-actual1, xshift=-0.3cm] (wup-ingres-ct1)  {\color{black}IngresConduit-1};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-ct1, xshift=-0.3cm] (wup-ingres-gk1)  {\color{black}IngresGatekeeper-1};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-gk1, xshift=-0.3cm] (wup-ingres-pr1)  {\color{black}IngresProcessor-1};
+                \node[rectangle, minimum height=0.6cm, below=of wup-actual1](wup-label-1){\Large{Work-Unit-Processor-1}};
+                \node[rectangle, draw, dashed, color=OliveGreen, fit=(wup-ingres-pr1)(wup-egress-gk1)(wup-label-1)] (wup-1) {};
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-pr1) -- (wup-egress-gk1);
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-ct1) -- (wup-egress-pr1);
+                \draw[->, ultra thick, color=OliveGreen](wup-actual1) -- (wup-egress-ct1);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-ct1) -- (wup-actual1);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-gk1) -- (wup-ingres-ct1);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-pr1) -- (wup-ingres-gk1);
+
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, above=of wup-egress-gk1, yshift=1cm] (wup-egress-gk2)  {\color{black}EgressGatekeeper-2};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-gk2, xshift=-0.3cm] (wup-egress-pr2)  {\color{black}EgressProcessor-2};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-pr2, xshift=-0.3cm] (wup-egress-ct2)  {\color{black}EgressConduit-2};
+                \node[rectangle, draw, color=Purple, fill=Purple!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-ct2, xshift=-0.3cm] (wup-actual2)  {\color{black}WUP-2};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-actual2, xshift=-0.3cm] (wup-ingres-ct2)  {\color{black}IngresConduit-2};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-ct2, xshift=-0.3cm] (wup-ingres-gk2)  {\color{black}IngresGatekeeper-2};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-gk2, xshift=-0.3cm] (wup-ingres-pr2)  {\color{black}IngresProcessor-2};
+                \node[rectangle, minimum height=0.6cm, below=of wup-actual2](wup-label-2){\Large{Work-Unit-Processor-2}};
+                \node[rectangle, draw, dashed, color=OliveGreen, fit=(wup-ingres-pr2)(wup-egress-gk2)(wup-label-2)] (wup-2) {};
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-pr2) -- (wup-egress-gk2);
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-ct2) -- (wup-egress-pr2);
+                \draw[->, ultra thick, color=OliveGreen](wup-actual2) -- (wup-egress-ct2);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-ct2) -- (wup-actual2);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-gk2) -- (wup-ingres-ct2);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-pr2) -- (wup-ingres-gk2);
+
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, above=of wup-egress-gk2, yshift=2cm] (wup-egress-gkm)  {\color{black}EgressGatekeeper-M};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-gkm, xshift=-0.3cm] (wup-egress-prm)  {\color{black}EgressProcessor-M};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-prm, xshift=-0.3cm] (wup-egress-ctm)  {\color{black}EgressConduit-M};
+                \node[rectangle, draw, color=Purple, fill=Purple!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-egress-ctm, xshift=-0.3cm] (wup-actualm)  {\color{black}WUP-M};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-actualm, xshift=-0.3cm] (wup-ingres-ctm)  {\color{black}IngresConduit-M};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-ctm, xshift=-0.3cm] (wup-ingres-gkm)  {\color{black}IngresGatekeeper-M};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=3.5cm, minimum height=1.0cm, left=of wup-ingres-gkm, xshift=-0.3cm] (wup-ingres-prm)  {\color{black}IngresProcessor-M};
+                \node[rectangle, minimum height=0.6cm, below=of wup-actualm](wup-label-m){\Large{Work-Unit-Processor-N}};
+                \node[rectangle, draw, dashed, color=OliveGreen, fit=(wup-ingres-prm)(wup-egress-gkm)(wup-label-m)] (wup-m) {};
+
+                \draw[-, dotted](wup-2) -- (wup-m);
+
+                \node[rectangle, draw, dashed, color=OliveGreen, fit=(wup-m)(wup-1)] (wup-set) {};
+
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-prm) -- (wup-egress-gkm);
+                \draw[->, ultra thick, color=OliveGreen](wup-egress-ctm) -- (wup-egress-prm);
+                \draw[->, ultra thick, color=OliveGreen](wup-actualm) -- (wup-egress-ctm);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-ctm) -- (wup-actualm);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-gkm) -- (wup-ingres-ctm);
+                \draw[->, ultra thick, color=OliveGreen](wup-ingres-prm) -- (wup-ingres-gkm);
+
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, left=of audit-agent.north west, anchor=north east, xshift=-0.4cm](task-router){\large{\color{black}Fulfillment Task Router}};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, below=of task-router](task-status-controller){\large{\color{black}Fulfillment Task Controller}};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, left=of task-status-controller, xshift=-0.4cm](fulfillment-task-factory){\large{\color{black}Fulfillment Task Factory}};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, left=of task-router, xshift=-0.4cm](task-outcome-collector){\large{\color{black}Task Outcome Collector}};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, below=of task-status-controller](fulfillment-task-cache){\large{\color{black}Fulfillment-Task Cache}};
+                \node[rectangle, draw, color=OliveGreen, fill=OliveGreen!25, minimum width=6.75cm, minimum height=1.0cm, left=of fulfillment-task-cache, xshift=-0.4cm](task-monitor){\large{\color{black}Fulfillment Task Monitor}};
+                \node[rectangle, dashed, color=OliveGreen, fit=(task-status-controller)(fulfillment-task-factory)(fulfillment-task-cache)] (task-pathway-elements) {};
+                \node[rectangle, minimum height=0.6cm, below=of task-pathway-elements, yshift=0.1cm](task-pathway-label){\Large{Task Pathway}};
+                \node[rectangle, draw, dashed, color=OliveGreen, fit=(task-pathway-elements)(task-router)(task-pathway-label)] (task-pathway) {};
+
+                \node[rectangle, draw, color=black, fill=blue!25, minimum width=6.75cm, minimum height=1.0cm, below=of fulfillment-task-cache, yshift=-1.2cm](task-registration){\large{\color{black}Actionable Task Registration}};
+                \node[rectangle, draw, color=black, fill=blue!25, minimum width=6.75cm, minimum height=1.0cm, left=of task-registration,  xshift=-0.4cm](task-distribution){\large{\color{black}Actionable Task Router}};
+                \node[rectangle, draw, color=black, fill=blue!25, minimum width=6.75cm, minimum height=1.0cm, below=of task-registration](task-status-reporter){\large{\color{black}Task Status Reporter}};
+                \node[rectangle, dashed, color=Purple, fit=(task-status-reporter)(task-distribution)] (tasking-elements) {};
+                \node[rectangle, minimum height=0.6cm, below=of tasking-elements, yshift=0.1cm](tasking-label){\Large{Tasking \& Workflow}};
+                \node[rectangle, draw, dashed, color=blue, fit=(tasking-elements)(tasking-label)] (tasking) {};
+
+
+                \node[rectangle, draw, color=black, fill=yellow!25, minimum width=6.75cm, minimum height=1.0cm, left=of metrics-cache, xshift=-0.4cm](workflow-capability-reporter){\large{\color{black}Workflow Capability Reporter}};
+                \node[rectangle, draw, color=black, fill=yellow!25, minimum width=6.75cm, minimum height=1.0cm, left=of workflow-capability-reporter,  xshift=-0.4cm](component-configuration-management){\large{\color{black}Component Configuration}};
+                \node[rectangle, dashed, color=Purple, fit=(workflow-capability-reporter)(component-configuration-management)] (scaling-elements) {};
+                \node[rectangle, minimum height=0.6cm, below=of scaling-elements, yshift=0.1cm](scaling-label){\Large{Scaling}};
+                \node[rectangle, draw, dashed, color=black, fit=(scaling-elements)(scaling-label)] (scaling) {};
+
+            \end{tikzpicture}
+        \end{adjustbox}
+        \caption{The Petasos Framework - Logical Architecture - Overview}
+        \label{fig:logical-architecture-petasos-overview}
+    \end{figure}
 \section{Deployment Architecture}
 
 \chapter{Ponos}
+\label{epic:ponos}
 \section{Overview}
 \subsection{Functional Overview}
 
@@ -675,21 +797,21 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 The following diagram illustrates the subsystem breakdown of the \ponos subsystem.
 
 \begin{figure}[h!]
-\begin{adjustbox}{max size={0.95\textwidth}{0.9\textheight}, center}
-\begin{tikzpicture}[node distance=0.5cm]
-    \node[draw,rectangle, minimum width = 3cm](ponospm){\color{Purple}Ponos-PM};
-    \node[draw,rectangle, minimum width = 3cm, below=of ponospm, yshift=0.25cm](ponosim){\color{Purple}Ponos-IM};
-    \draw[<->](ponospm.south)--(ponosim.north);
-    \node[draw,rectangle, minimum width = 3cm, below=of ponosim, yshift=0.25cm](ponosdm){\color{Purple}Ponos-DM};
-    \draw[<->](ponosim.south)--(ponosdm.north);
-    \node[draw, cylinder, cylinder uses custom fill, cylinder body fill = gray!10, cylinder end fill = gray!40, aspect = 0.2, shape border rotate = 90, , below=of ponosdm, yshift=0.25cm](ponosdb){\small{Database}};
-    \draw[<->](ponosdm.south)--(ponosdb.north);
-    \node[rectangle, below=of ponosdb,yshift=0.25cm](ponoslabel){\color{Purple}\textsc{Ponos)}};
-    \node[draw,rectangle,dashed, fit=(ponospm) (ponoslabel)](ponos){};
-\end{tikzpicture}
-\end{adjustbox}
-\caption{Ponos Subsystem Overview}
-\label{fig:ponos-subsystem-overview}
+    \begin{adjustbox}{max size={0.95\textwidth}{0.9\textheight}, center}
+        \begin{tikzpicture}[node distance=0.5cm]
+            \node[draw,rectangle, minimum width = 3cm](ponospm){\color{Purple}Ponos-PM};
+            \node[draw,rectangle, minimum width = 3cm, below=of ponospm, yshift=0.25cm](ponosim){\color{Purple}Ponos-IM};
+            \draw[<->](ponospm.south)--(ponosim.north);
+            \node[draw,rectangle, minimum width = 3cm, below=of ponosim, yshift=0.25cm](ponosdm){\color{Purple}Ponos-DM};
+            \draw[<->](ponosim.south)--(ponosdm.north);
+            \node[draw, cylinder, cylinder uses custom fill, cylinder body fill = gray!10, cylinder end fill = gray!40, aspect = 0.2, shape border rotate = 90, , below=of ponosdm, yshift=0.25cm](ponosdb){\small{Database}};
+            \draw[<->](ponosdm.south)--(ponosdb.north);
+            \node[rectangle, below=of ponosdb,yshift=0.25cm](ponoslabel){\color{Purple}\textsc{Ponos)}};
+            \node[draw,rectangle,dashed, fit=(ponospm) (ponoslabel)](ponos){};
+        \end{tikzpicture}
+    \end{adjustbox}
+    \caption{Ponos Subsystem Overview}
+    \label{fig:conceptual-overview-ponos}
 \end{figure}
 
 The \ponos subsystem, like many other \dricats subsystems, is typically implemented as four discrete applications - each executing within their own container (set) within a \textit{Kubernetes} environment. These applications are:
@@ -838,5 +960,24 @@ It is also worthwhile noting that \ponos implments data resilience via replicati
 \section{Conceptual Architecture}
 \section{Logical Architectire}
 \section{Deployment Architecture}
+
+\chapter{Communicate.RoomServer}
+\section{Overview}
+\section{Conceptual Architecture}
+\section{Logical Architectire}
+\section{Deployment Architecture}
+
+\chapter{Communicate.Iris}
+\section{Overview}
+\section{Conceptual Architecture}
+\section{Logical Architectire}
+\section{Deployment Architecture}
+
+\chapter{Communicate.VoIPBridge}
+\section{Overview}
+\section{Conceptual Architecture}
+\section{Logical Architectire}
+\section{Deployment Architecture}
+
 \end{document}
 
