@@ -591,9 +591,14 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
                 \item \textit{Shared Cache Availability:} The base \textit{ActionableTask} is persisteted across of application instant types for the purposes of recovery and re-try via another application instant - if this instant fails processing the task more than a configurable number or times or fails/terminates for some reason.
                 \item \textit{Task Repository:} The base \textit{ActionableTask} is registered  with a centralised repository (see \ref{feature:petasos.tasking.registration}) for the purposes of ``global'' monitoring, suspend/resume and recovery activities.
             \end{itemize}
-            \item \textit{Reporting:}
-            \item \textit{Distribution:}
-            \item \textit{Interception:}
+            \item \textit{Reporting:} The reporting framework supports the per-instance reporting of \textit{Task Fulfillment}, including:
+            \begin{itemize}
+                \item \textit{Task Reception:} The logging (ITOps notification) of reception of a ``new'' task to be fullfilled and capture of the registration and instantiation timestamps.
+                \item \textit{Task Execution:} The logging (ITOps notification) of task commencement, finish (and finalisation), including capture of metrics associated with the task processing.
+                \item \textit{Task Outcome:} The logging (ITOps notification) of task outcomes, resultant ``new task'' creation and recipient details.
+            \end{itemize}
+            \item \textit{Distribution:} The distrubtion (or routing) of tasks (\textit{PetasosFulfillmentTask} to the appropriate \textit{Work Unit Processor} for processing.
+            \item \textit{Interception:} The ``trapping and redirection'' of tasks (\textit{PetasosActionableTasks} to \textbf{alternate} ``fulfillment'' \textit{Work Unit Processors} and subsequence ``redirection'' of outcomes back to the \textbf{original} point of processing.
         \end{itemize}
     \end{itemize}
 
@@ -631,10 +636,15 @@ A core enabler of this resilience is the \textit{Petasos} framework - a set of c
 \subsubsection{Registration}
 \label{feature:petasos.tasking.registration}
 \subsubsection{Replication}
+\label{feature:petasos.tasking.replication}
 \subsubsection{Recovery}
+\label{feature:petasos.tasking.recovery}
 \subsubsection{Reporting}
+\label{feature:petasos.tasking.reporting}
 \subsubsection{Distribution}
+\label{feature:petasos.tasking.distribution}
 \subsubsection{Interception}
+\label{feature:petasos.tasking.interception}
 
 \section{Conceptual Architecture}
 \section{Logical Architecture}
